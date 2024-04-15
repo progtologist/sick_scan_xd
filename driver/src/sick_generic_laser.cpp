@@ -66,6 +66,7 @@
 #endif
 
 #include <sick_scan/sick_ros_wrapper.h>
+#include "softwarePLL.h"
 #if defined LDMRS_SUPPORT && LDMRS_SUPPORT > 0
 #include <sick_scan/ldmrs/sick_ldmrs_node.h>
 #endif
@@ -494,6 +495,14 @@ void mainGenericLaserInternal(int argc, char **argv, std::string nodeName, rosNo
 #endif
   }
 
+  // Optional timestamp mode:
+  // TICKS_TO_SYSTEM_TIMESTAMP = 0, // default: convert lidar ticks in microseconds to system timestamp by software-pll
+  // TICKS_TO_MICROSEC_OFFSET_TIMESTAMP = 1 // optional tick-mode: convert lidar ticks in microseconds to timestamp by 1.0e-6*(curtick-firstTick)+firstSystemTimestamp;
+  int tick_to_timestamp_mode = 0;
+  rosDeclareParam(nhPriv, "tick_to_timestamp_mode", tick_to_timestamp_mode);
+  rosGetParam(nhPriv, "tick_to_timestamp_mode", tick_to_timestamp_mode);
+  SoftwarePLL::instance().setTicksToTimestampMode(tick_to_timestamp_mode);
+
   if(scannerName == SICK_SCANNER_SCANSEGMENT_XD_NAME || scannerName == SICK_SCANNER_PICOSCAN_NAME)
   {
 #if defined SCANSEGMENT_XD_SUPPORT && SCANSEGMENT_XD_SUPPORT > 0
@@ -800,7 +809,6 @@ int mainGenericLaser(int argc, char **argv, std::string nodeName, rosNodePtr nhP
 }
 
 // Send odometry data to NAV350
-#include "softwarePLL.h"
 #include "sick_scan_api.h"
 #include "sick_scan/sick_nav_scandata_parser.h"
 int32_t SickScanApiNavOdomVelocityImpl(SickScanApiHandle apiHandle, SickScanNavOdomVelocityMsg* src_msg) // odometry data in nav coordinates
