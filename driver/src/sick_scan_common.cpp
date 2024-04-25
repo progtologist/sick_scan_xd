@@ -3424,7 +3424,7 @@ namespace sick_scan_xd
               if(this->parser_->getCurrentParamPtr()->getScannerName().compare(SICK_SCANNER_MRS_1XXX_NAME) == 0
               || this->parser_->getCurrentParamPtr()->getScannerName().compare(SICK_SCANNER_LMS_5XX_NAME) == 0)
               {
-                result &= sendSopasRunSetAccessMode(useBinaryCmd);
+                result = sendSopasRunSetAccessMode(useBinaryCmd);
               }
               lmp_scancfg.sector_cfg.push_back(lmp_scancfg_sector);
               std::string lmp_scancfg_sopas;

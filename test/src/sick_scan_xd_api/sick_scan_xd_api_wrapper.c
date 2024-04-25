@@ -224,7 +224,7 @@ int32_t SickScanApiLoadLibrary(const char* library_filepath)
     }
     if (hinstLib == NULL)
     {
-        printf("## ERROR SickScanApiLoadLibrary: LoadLibrary(%s) failed\n", library_filepath);
+        printf("## WARNING SickScanApiLoadLibrary: LoadLibrary(\"%s\") failed\n", library_filepath);
         ret = SICK_SCAN_API_NOT_LOADED;
     }
     return ret;

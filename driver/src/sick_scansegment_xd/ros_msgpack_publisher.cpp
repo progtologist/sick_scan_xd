@@ -875,37 +875,37 @@ void sick_scansegment_xd::RosMsgpackPublisher::HandleMsgPackData(const sick_scan
 	// Publish optional IMU data
 	if (msgpack_data.scandata.empty() && msgpack_data.imudata.valid)
 	{
+		ROS_DEBUG_STREAM("Publishing IMU data: { " << msgpack_data.imudata.to_string() << " }");
+		// Convert to ros_sensor_msgs::Imu
+		ros_sensor_msgs::Imu imu_msg;
+		imu_msg.header.stamp.sec = msgpack_data.timestamp_sec;
+#if defined __ROS_VERSION && __ROS_VERSION > 1
+		imu_msg.header.stamp.nanosec = msgpack_data.timestamp_nsec;
+#else
+		imu_msg.header.stamp.nsec = msgpack_data.timestamp_nsec;
+#endif
+		imu_msg.header.frame_id = m_frame_id;
+		imu_msg.orientation.w = msgpack_data.imudata.orientation_w;
+		imu_msg.orientation.x = msgpack_data.imudata.orientation_x;
+		imu_msg.orientation.y = msgpack_data.imudata.orientation_y;
+		imu_msg.orientation.z = msgpack_data.imudata.orientation_z;
+		imu_msg.angular_velocity.x = msgpack_data.imudata.angular_velocity_x;
+		imu_msg.angular_velocity.y = msgpack_data.imudata.angular_velocity_y;
+		imu_msg.angular_velocity.z = msgpack_data.imudata.angular_velocity_z;
+		imu_msg.linear_acceleration.x = msgpack_data.imudata.acceleration_x;
+		imu_msg.linear_acceleration.y = msgpack_data.imudata.acceleration_y;
+		imu_msg.linear_acceleration.z = msgpack_data.imudata.acceleration_z;
+		// ros imu message definition: A covariance matrix of all zeros will be interpreted as "covariance unknown"
+		for(int n = 0; n < 9; n++)
+		{
+			imu_msg.orientation_covariance[n] = 0;
+			imu_msg.angular_velocity_covariance[n] = 0;
+			imu_msg.linear_acceleration_covariance[n] = 0;
+		}
+		// Publish imu message
+		sick_scan_xd::notifyImuListener(m_node, &imu_msg);
 		if (m_publisher_imu_initialized)
 		{
-		  ROS_DEBUG_STREAM("Publishing IMU data: { " << msgpack_data.imudata.to_string() << " }");
-			// Convert to ros_sensor_msgs::Imu
-			ros_sensor_msgs::Imu imu_msg;
-			imu_msg.header.stamp.sec = msgpack_data.timestamp_sec;
-#if defined __ROS_VERSION && __ROS_VERSION > 1
-      imu_msg.header.stamp.nanosec = msgpack_data.timestamp_nsec;
-#else
-			imu_msg.header.stamp.nsec = msgpack_data.timestamp_nsec;
-#endif
-			imu_msg.header.frame_id = m_frame_id;
-			imu_msg.orientation.w = msgpack_data.imudata.orientation_w;
-			imu_msg.orientation.x = msgpack_data.imudata.orientation_x;
-			imu_msg.orientation.y = msgpack_data.imudata.orientation_y;
-			imu_msg.orientation.z = msgpack_data.imudata.orientation_z;
-			imu_msg.angular_velocity.x = msgpack_data.imudata.angular_velocity_x;
-			imu_msg.angular_velocity.y = msgpack_data.imudata.angular_velocity_y;
-			imu_msg.angular_velocity.z = msgpack_data.imudata.angular_velocity_z;
-			imu_msg.linear_acceleration.x = msgpack_data.imudata.acceleration_x;
-			imu_msg.linear_acceleration.y = msgpack_data.imudata.acceleration_y;
-			imu_msg.linear_acceleration.z = msgpack_data.imudata.acceleration_z;
-			// ros imu message definition: A covariance matrix of all zeros will be interpreted as "covariance unknown"
-			for(int n = 0; n < 9; n++)
-			{
-				imu_msg.orientation_covariance[n] = 0;
-				imu_msg.angular_velocity_covariance[n] = 0;
-				imu_msg.linear_acceleration_covariance[n] = 0;
-			}
-			// Publish imu message
-			sick_scan_xd::notifyImuListener(m_node, &imu_msg);
 #if defined __ROS_VERSION && __ROS_VERSION > 1
 	   m_publisher_imu->publish(imu_msg);
 #else

@@ -115,6 +115,13 @@
         AND IS IN THE SAME STATE AS AFTER INITIALIZATION BY THIS LAUNCHFILE!
         -->
         <param name="initialize_scanner" type="int" value="$(arg initialize_scanner)"/>
+        
+        <!-- 
+        Optional mode to convert lidar ticks to ros- resp. system-timestamps:
+        tick_to_timestamp_mode = 0 (default): convert lidar ticks in microseconds to system timestamp by software-pll
+        tick_to_timestamp_mode = 1 (optional tick-mode): convert lidar ticks in microseconds to timestamp by 1.0e-6*(curtick-firstTick)+firstSystemTimestamp;
+        -->
+        <param name="tick_to_timestamp_mode" type="int" value="0"/>
 
     </node>
 </launch>
