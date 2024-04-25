@@ -49,7 +49,7 @@
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
 *
-*  Last modified: 3dr April 2024
+*  Last modified: 13th April 2024
 *
 *      Authors:
 *         Michael Lehning <michael.lehning@lehning.de>
@@ -77,6 +77,7 @@
 #include <sick_scan/sick_generic_laser.h>
 #include <sick_scan/sick_scan_services.h>
 #include <sick_scan/sick_generic_monitoring.h>
+#include <sick_scan/sick_tf_publisher.h>
 
 #include "launchparser.h"
 #if __ROS_VERSION != 1 // launchparser for native Windows/Linux and ROS-2
@@ -92,8 +93,8 @@
 #include <signal.h>
 
 #define SICK_GENERIC_MAJOR_VER "3"
-#define SICK_GENERIC_MINOR_VER "3"
-#define SICK_GENERIC_PATCH_LEVEL "1"
+#define SICK_GENERIC_MINOR_VER "4"
+#define SICK_GENERIC_PATCH_LEVEL "0"
 
 #define DELETE_PTR(p) if(p){delete(p);p=0;}
 
@@ -215,6 +216,57 @@ void rosSignalHandler(int signalRecv)
   std::cout << "sick_generic_laser: exit (line " << __LINE__ << ")" << std::endl;
 }
 
+/**
+ * \brief Converts a given SOPAS command from ascii to binary (in case of binary communication), sends sopas (ascii or binary) and returns the response (if wait_for_reply:=true)
+ * \param [in] sopas_ascii_request sopas command to send in ascii (converted automatically to binary if required)
+ * \param [out] sopas_response sopas response from lidar (with optional parameter in hex values)
+ */
+bool convertSendSOPASCommand(const std::string& sopas_ascii_request, std::string& sopas_response, bool wait_for_reply)
+{
+  sopas_response = "";
+  std::string sopas_request = sopas_ascii_request;
+  std::vector<unsigned char> sopas_response_raw;
+  if (s_scanner != NULL && s_isInitialized)
+  {
+    if (sopas_ascii_request[0] != 0x02) // append <stx> and <etx>
+    {
+      sopas_request.clear();
+      sopas_request.push_back((char)0x02); // <stx>
+      sopas_request.insert(sopas_request.end(), sopas_ascii_request.begin(), sopas_ascii_request.end());
+      sopas_request.push_back((char)0x03); // <etx>
+    }
+    if (s_scanner->convertSendSOPASCommand(sopas_request, &sopas_response_raw, wait_for_reply) == sick_scan_xd::ExitSuccess)
+    {
+      sopas_response = s_scanner->sopasReplyToString(sopas_response_raw);
+      ROS_INFO_STREAM("convertSendSOPASCommand(): sopas_request = \"" << sopas_ascii_request << "\", sopas_response = \"" << sopas_response << "\"\n");
+      return true;
+    }
+    else
+    {
+      ROS_WARN_STREAM("## WARNING in convertSendSOPASCommand(\"" << sopas_ascii_request << "\"): SickScanCommon::convertSendSOPASCommand() failed.\n");
+    }
+  }
+  else
+  {
+#if defined SCANSEGMENT_XD_SUPPORT && SCANSEGMENT_XD_SUPPORT > 0
+    sick_scan_xd::SickScanServices* sopas_service = 0;
+    if ((sopas_service = sick_scansegment_xd::sopasService()) != 0)
+    {
+      if (sopas_service->sendSopasAndCheckAnswer(sopas_request, sopas_response_raw, sopas_response))
+      {
+        ROS_INFO_STREAM("convertSendSOPASCommand(): sopas_request = \"" << sopas_ascii_request << "\", sopas_response = \"" << sopas_response << "\"\n");
+        return true;
+      }
+      else
+      {
+        ROS_WARN_STREAM("## WARNING in convertSendSOPASCommand(\"" << sopas_ascii_request << "\"): SickScanServices::sendSopasAndCheckAnswer() failed.\n");
+      }
+    }
+#endif
+    ROS_WARN_STREAM("## WARNING in convertSendSOPASCommand(\"" << sopas_ascii_request << "\") failed: scanner not initialized\n");
+  }
+  return false;
+}
 
 // fprintf-like conversion of va_args to string, thanks to https://codereview.stackexchange.com/questions/115760/use-va-list-to-format-a-string
 std::string vargs_to_string(const char *const format, ...)
@@ -415,6 +467,7 @@ void mainGenericLaserInternal(int argc, char **argv, std::string nodeName, rosNo
   std::string cloud_topic = "cloud";
   rosDeclareParam(nhPriv, "hostname", "192.168.0.4");
   rosDeclareParam(nhPriv, "imu_enable", true);
+  rosDeclareParam(nhPriv, "imu_topic", "imu");
   rosDeclareParam(nhPriv, "cloud_topic", cloud_topic);
   if (doInternalDebug)
   {
@@ -424,6 +477,7 @@ void mainGenericLaserInternal(int argc, char **argv, std::string nodeName, rosNo
 #else
       rosSetParam(nhPriv, "hostname", "192.168.0.4");
       rosSetParam(nhPriv, "imu_enable", true);
+      rosSetParam(nhPriv, "imu_topic", "imu");
       rosSetParam(nhPriv, "cloud_topic", "cloud");
 #endif
   }
@@ -494,15 +548,21 @@ void mainGenericLaserInternal(int argc, char **argv, std::string nodeName, rosNo
 #endif
   }
 
+  // Start TF publisher
+  sick_scan_xd::SickTransformPublisher tf_publisher(nhPriv);
+  tf_publisher.run();
+
   if(scannerName == SICK_SCANNER_SCANSEGMENT_XD_NAME || scannerName == SICK_SCANNER_PICOSCAN_NAME)
   {
 #if defined SCANSEGMENT_XD_SUPPORT && SCANSEGMENT_XD_SUPPORT > 0
     exit_code = sick_scansegment_xd::run(nhPriv, scannerName);
     std::cout << "sick_generic_laser: sick_scansegment_xd finished with " << (exit_code == sick_scan_xd::ExitSuccess ? "success" : "ERROR") << std::endl;
+    tf_publisher.stop();
     return;
 #else
     ROS_ERROR_STREAM("SCANSEGMENT_XD_SUPPORT deactivated, " << scannerName << " not supported. Please build sick_scan_xd with option SCANSEGMENT_XD_SUPPORT");
     exit_code = sick_scan_xd::ExitError;
+    tf_publisher.stop();
     return;
 #endif
   }
@@ -735,6 +795,7 @@ void mainGenericLaserInternal(int argc, char **argv, std::string nodeName, rosNo
   printf("sick_generic_laser: leaving main loop...");
   setDiagnosticStatus(SICK_DIAGNOSTIC_STATUS::EXIT, "sick_scan_xd exit");
 
+  tf_publisher.stop();
   if(pointcloud_monitor)
     pointcloud_monitor->stopPointCloudMonitoring();
   DELETE_PTR(scan_msg_monitor);
