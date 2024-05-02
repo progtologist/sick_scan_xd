@@ -93,6 +93,11 @@ elseif(DEFINED SICK_TARGET_ENDIANESS)
     add_compile_options(-DSICK_TARGET_ENDIANESS=${SICK_TARGET_ENDIANESS})
 endif()
 
+# Optional calling convention of sick_scan_xd API (using default is recommended, but can be overwritten by cmake flag if required)
+if(DEFINED SICK_SCAN_XD_API_CALLING_CONVENTION)
+    add_compile_options(-DSICK_SCAN_XD_API_CALLING_CONVENTION=${SICK_SCAN_XD_API_CALLING_CONVENTION})
+endif()
+
 # ROS Version
 message(STATUS "ROS_VERSION precheck: ENV{ROS_VERSION}=$ENV{ROS_VERSION} ENV{ROS_DISTRO}=$ENV{ROS_DISTRO} ROS_VERSION=${ROS_VERSION} CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
 if(DEFINED CMAKE_PREFIX_PATH AND "${CMAKE_PREFIX_PATH}" STREQUAL "/opt/ros/humble")

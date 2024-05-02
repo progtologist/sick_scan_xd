@@ -251,7 +251,7 @@ static void apiTestLogMsgCallback(SickScanApiHandle apiHandle, const SickScanLog
 // Receive lidar message by SickScanApiWaitNext-functions ("message polling")
 static void runSickScanApiTestWaitNext(SickScanApiHandle* apiHandle, bool* run_flag)
 {
-	double wait_next_message_timeout = 0.1; // wait max. 0.1 seconds for the next message (otherwise SickScanApiWaitNext-function return with timeout)
+  double wait_next_message_timeout = 0.1; // wait max. 0.1 seconds for the next message (otherwise SickScanApiWaitNext-function return with timeout)
   SickScanPointCloudMsg pointcloud_msg;
 	SickScanImuMsg imu_msg;
 	SickScanLFErecMsg lferec_msg;
@@ -464,6 +464,8 @@ int sick_scan_api_test_main(int argc, char** argv, const std::string& sick_scan_
   if (polling)
   {
     run_polling = false;
+    if ((ret = SickScanApiClose(apiHandle)) != SICK_SCAN_API_SUCCESS)
+      exitOnError("SickScanApiClose failed", ret);
     if (run_polling_thread->joinable())
       run_polling_thread->join();
     delete run_polling_thread;
@@ -480,9 +482,9 @@ int sick_scan_api_test_main(int argc, char** argv, const std::string& sick_scan_
     SickScanApiDeregisterLdmrsObjectArrayMsg(apiHandle, apiTestLdmrsObjectArrayCallback);
     SickScanApiDeregisterVisualizationMarkerMsg(apiHandle, apiTestVisualizationMarkerMsgCallback);
     SickScanApiDeregisterNavPoseLandmarkMsg(apiHandle, apiTestNavPoseLandmarkMsgCallback);
+    if ((ret = SickScanApiClose(apiHandle)) != SICK_SCAN_API_SUCCESS)
+      exitOnError("SickScanApiClose failed", ret);
   }
-  if ((ret = SickScanApiClose(apiHandle)) != SICK_SCAN_API_SUCCESS)
-    exitOnError("SickScanApiClose failed", ret);
   if ((ret = SickScanApiRelease(apiHandle)) != SICK_SCAN_API_SUCCESS)
     exitOnError("SickScanApiRelease failed", ret);
   if (!polling)

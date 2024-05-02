@@ -6,7 +6,16 @@ features that will be removed in future versions **Removed** for deprecated feat
 
 ## Unreleased ##
 
-### 3.4.0
+### 3.5.0
+  - **add** Optional switch between "system timestamps" (default) and "tick timestamps"
+  - **add** Extract sick_scan_xd version from package.xml
+  - **add** Add git info to sick_scan_xd version
+  - **fix** #316 (blocking API-close in case of wrong ip-address)
+  - **add** #321, #310 (optional cmake-flag to set a calling convention for API calls)
+
+## Released ##
+
+### Release v3.4.0
   - **add** azimut angle table for MRS-1xxx and LMS-1xxx with firmware 2.2.0 oder newer
   - **add** dockertests for MRS-1xxx, multiScan and picoScan with ROS-2
   - **add** API-funktion SickScanApiSendSOPAS to send SOPAS commands (e.g. "sRN SCdevicestate" or "sRN ContaminationResult")
@@ -14,8 +23,6 @@ features that will be removed in future versions **Removed** for deprecated feat
   - **add** Option to deactivate initialization sequence for TiM-7xxS devices
   - **add** Documented option "-b master"  to clone the release version
   - **fix** #316 API re-init nach close
-
-## Released ##
 
 ### Release v3.3.0
 
