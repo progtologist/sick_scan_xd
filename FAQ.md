@@ -35,6 +35,22 @@ Node name, ip-address and pointcloud topic can be configured in the launch-file 
 
 Scripts [run_linux_ros1_simu_tim7xx_twin.bash](./test/scripts/run_linux_ros1_simu_tim7xx_twin.bash) and [run_linux_ros2_simu_tim7xx_twin.bash](./test/scripts/run_linux_ros2_simu_tim7xx_twin.bash) show a complete example with emulation of two TiM7xx sensors and two sick_scan_xd nodes running concurrently using different nodenames and topics.
 
+To run two picoScan devices simultanously, each sick_scan_xd node must be configured with different lidar ip addresses and udp ports, different node names, different ros topics and frame ids for each point cloud. Therefore the following launchfile parameter should be overwritten by individual settings for each lidar:
+* "hostname": e.g. "192.168.0.190" and "192.168.0.98"
+* "nodename": e.g. sick_picoscan0" and "sick_picoscan1"
+* "publish_frame_id": e.g. "world0" and "world1"
+* "publish_laserscan_segment_topic": e.g. "scan0_segment" and "scan1_segment"
+* "publish_laserscan_fullframe_topic": e.g. "scan0_fullframe" and "scan1_fullframe"
+* "imu_topic": e.g. "imu0" and "imu1"
+* "udp_port": e.g. "56661" and "56662"
+* "imu_udp_port": e.g. "7503" and "7504"
+* individual topics and frame id for each customized point cloud, e.g.
+    * replace all "topic=/cloud_" by "topic=/cloud0_" resp. "topic=/cloud1_"
+    * replace all "frameid=world" by "frameid=world0" resp. "frameid=world1"
+It is recommend to first verify the launchfile configurations separately for each picoScan before running them simultanously.
+
+For picoScan and multiScan, parameter udp_receiver_ip must be set to the ip address of the PC running sick_scan_xd. It is recommend to use ip addresses in the same subnet.
+
 ## Driver restarts again and again after "sFA" message
 
 :question: The sick_scan_xd driver restarts again and again after an error message "sFA".
