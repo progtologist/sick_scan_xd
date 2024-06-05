@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /PointCloud21
         - /Map1
         - /TF1
       Splitter Ratio: 0.5
@@ -60,7 +61,7 @@ Visualization Manager:
         Min Value: -10
         Value: true
       Axis: Z
-      Channel Name: intensity
+      Channel Name: i
       Class: rviz/PointCloud2
       Color: 255; 255; 255
       Color Transformer: Intensity
@@ -75,8 +76,8 @@ Visualization Manager:
       Selectable: true
       Size (Pixels): 3
       Size (m): 0.009999999776482582
-      Style: Squares
-      Topic: /cloud
+      Style: Points
+      Topic: /cloud_all_fields_fullframe
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -110,10 +111,38 @@ Visualization Manager:
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.009999999776482582
+      Style: Points
+      Topic: /sick_picoscan/scan_fullframe
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: /scan
+      Topic: /multiScan/scan_fullframe
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -141,19 +170,17 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
-        cloud:
-          Value: true
-        cloud_POS_000_DIST1:
-          Value: true
         laser:
           Value: true
         map:
           Value: true
-        nav:
-          Value: true
         odom:
           Value: true
         scanmatcher_frame:
+          Value: true
+        world:
+          Value: true
+        world_1:
           Value: true
       Marker Alpha: 1
       Marker Scale: 1
@@ -168,12 +195,11 @@ Visualization Manager:
               base_footprint:
                 base_link:
                   base_laser:
-                    cloud:
-                      nav:
-                        {}
-                    cloud_POS_000_DIST1:
-                      {}
                     laser:
+                      {}
+                    world:
+                      {}
+                    world_1:
                       {}
       Update Interval: 0
       Value: true
@@ -181,7 +207,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -205,7 +231,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 6.760457515716553
+      Distance: 7.355217933654785
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -241,5 +267,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1357
-  X: 393
-  Y: 80
+  X: 579
+  Y: 27
