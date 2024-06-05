@@ -2,7 +2,7 @@
 Changelog for package sick_scan_xd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
+3.4.0 (2024-05-03)
 -----------
 * Release 3.5.0
   * add: Optional switch between "system timestamps" (default) and "tick timestamps"
@@ -25,7 +25,7 @@ Forthcoming
 3.3.0 (2024-03-04)
 ------------------
 * Release v3.3.0
-  * add: Option for MRS1xxx azimuth correction table 
+  * add: Option for MRS1xxx azimuth correction table
   * add: Support for picoScan100 (single echo w/o addons)
   * add: API logging functions and verbosity (#270)
   * add: API documentation (multiple lidars not supported, #281)
