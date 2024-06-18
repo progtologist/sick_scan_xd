@@ -186,7 +186,7 @@ sick_scansegment_xd::Config::Config()
     host_set_LFPlayerFilter = false;                            // If true (Multiscan136 only, always false for picoscan), LFPlayerFilter is set at startup (default: false)
 
     // msgpack validation default settings
-    msgpack_validator_enabled = true; // true: check msgpack data for out of bounds and missing scan data, false: no msgpack validation
+    msgpack_validator_enabled = false; // true: check msgpack data for out of bounds and missing scan data, false (default): no msgpack validation
     msgpack_validator_verbose = 0;    // 0: print error messages, 1: print error and informational messages, 2: print error and all messages
     msgpack_validator_discard_msgpacks_out_of_bounds = true; // true: msgpacks are discarded if scan data out of bounds detected, false: error message if a msgpack is not validated
     msgpack_validator_check_missing_scandata_interval = 12; //
