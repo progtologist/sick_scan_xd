@@ -44,7 +44,7 @@ To run two picoScan devices simultanously, each sick_scan_xd node must be config
 * "imu_topic": e.g. "imu0" and "imu1"
 * "udp_port": e.g. "56661" and "56662"
 * "imu_udp_port": e.g. "7503" and "7504"
-* individual topics and frame id for each customized point cloud, e.g.
+* individual topics and frame ids for each customized point cloud, e.g.
     * replace all "topic=/cloud_" by "topic=/cloud0_" resp. "topic=/cloud1_"
     * replace all "frameid=world" by "frameid=world0" resp. "frameid=world1"
 It is recommend to first verify the launchfile configurations separately for each picoScan before running them simultanously.

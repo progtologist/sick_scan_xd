@@ -978,3 +978,15 @@ if(${ENABLE_EMULATOR} OR ENABLE_EMULATOR EQUAL ON)
         tools/test_server/launch
         DESTINATION share/${PROJECT_NAME})
 endif()
+
+#
+# rtabmap support utilities
+#
+
+if(${ENABLE_EMULATOR} OR ENABLE_EMULATOR EQUAL ON)
+    if(NOT WIN32 AND ROS_VERSION EQUAL 1)
+        add_executable(pose2d_to_odom_converter test/src/pose2d_to_odom_converter.cpp)
+        target_link_libraries(pose2d_to_odom_converter ${PROJECT_NAME}_lib ${SICK_LDMRS_LIBRARIES} ${catkin_LIBRARIES})
+        install(TARGETS pose2d_to_odom_converter DESTINATION lib/${PROJECT_NAME})
+    endif()    
+endif()
