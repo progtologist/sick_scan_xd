@@ -127,6 +127,7 @@ bool shutdownSignalReceived();
 
 #include <ros/ros.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/LaserScan.h>
