@@ -178,7 +178,7 @@ src/
 After doing this please rerun the command
 catkin_make_isolated --install --cmake-args -DROS_VERSION=1 -DLDMRS=0
 
-## rviz shows a grey point cloud
+## rviz or rviz2 do not work as expected
 
 :question: rviz shows a grey point cloud. The size of points can be adjusted.
 
@@ -195,6 +195,10 @@ The problem can be avoided by starting rviz with the following sequence:
 export LIBGL_ALWAYS_SOFTWARE=1
 rosrun rviz rviz
 ```
+
+:question: rviz2 on Ubuntu 24 with ROS-2 jazzy crashes immediately after start
+
+:white_check_mark: This can be a wayland vs. X11 problem. Try `export QT_QPA_PLATFORM=xcb` before starting rviz2. See https://github.com/ros-visualization/rviz/issues/1442#issuecomment-553900795 and https://blog.martin-graesslin.com/blog/2015/07/porting-qt-applications-to-wayland/ for further information.
 
 ## Angular resolution and scan frequency
 
@@ -227,47 +231,8 @@ sick_generic_caller gives you an answer like:
 "ERROR: Tcp::open: Failed to open TCP connection to 192.168.0.1, aborting."
 ```
 
-:white_check_mark: Answer:
-1. Try to ping your device:
-   ```bash
-   ping 192.168.0.1
-   ```
-2. Disconnect your scanner and retry ping
+:white_check_mark: Answer: See [network.md](doc/network.md) for network diagnosis and recommended configuration.
 
-   ```bash
-   ping 192.168.0.1
-   ```
-   The result of ping contains a pattern like
-   ```bash
-    ... Destination Host Unreachable
-   ```
-3. Reconnect your device and try to ping:
-   ```bash
-   ping 192.168.0.1
-   ```
-
-If you do not know the ip address, try to find the ip address in your subnet:
-```bash
-apt-get install fping
-```
-
-scan your network (for example, subnet 192.168.10.0/24):
-```bash
-192.168.0.1/24
-```
-search for all ip addresses from 192.168.0.0 to 192.168.0.255
-
-The result is similar to:
-```bash
-192.168.0.4 is alive
-192.168.0.22 is alive
-```
-and a lot of unreachable entries.
-In the example the ip address 192.168.0.4 is the laserscanner MRS1104 and the ip address 192.168.0.22 is the computer running linux. Check this with
-
-```bash
-ifconfig|grep 192.168.0.22
-```
 ## IP Address of Lidar
 
 :question: Question:
