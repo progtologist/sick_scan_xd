@@ -76,6 +76,7 @@
 #include <vector>
 #include <chrono>
 #include <cstdarg>
+#include <cstdint>
 
 #if !defined __ROS_VERSION
 #define __ROS_VERSION 0 // default: native Linux or Windows

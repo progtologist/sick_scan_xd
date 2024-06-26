@@ -34,7 +34,9 @@ function waitUntilRvizClosed()
 # 
 
 pushd ../../../..
-source /opt/ros/humble/setup.bash
+if   [ -f /opt/ros/jazzy/setup.bash    ] ; then source /opt/ros/jazzy/setup.bash ; export QT_QPA_PLATFORM=xcb
+elif [ -f /opt/ros/humble/setup.bash   ] ; then source /opt/ros/humble/setup.bash
+fi
 killall_cleanup
 printf "\033c"
 
