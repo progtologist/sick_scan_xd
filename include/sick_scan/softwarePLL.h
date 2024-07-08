@@ -15,6 +15,7 @@
 #include <vector>
 #include <cstdlib>
 #include <iomanip>
+#include <cstdint>
 #include <ctime>
 
 class SoftwarePLL
